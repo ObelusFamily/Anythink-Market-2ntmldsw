@@ -3,6 +3,24 @@ var uniqueValidator = require("mongoose-unique-validator");
 var slug = require("slug");
 var User = mongoose.model("User");
 
+const { Configuration, OpenAIApi } = require("openai");
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const openai = new OpenAIApi(configuration);
+
+const generateImage = async (title) => {
+  const response = await openai.createImage({
+    prompt: title,
+    n: 1,
+    size: "256x256",
+  });
+  image_url = response.data.data[0].url;
+  return image_url
+}
+
 var ItemSchema = new mongoose.Schema(
   {
     slug: { type: String, lowercase: true, unique: true },
@@ -44,12 +62,12 @@ ItemSchema.methods.updateFavoriteCount = function() {
   });
 };
 
-ItemSchema.methods.toJSONFor = function(user) {
+ItemSchema.methods.toJSONFor = async function(user) {
   return {
     slug: this.slug,
     title: this.title,
     description: this.description,
-    image: this.image,
+    image: this.image || await generateImage(this.title),
     createdAt: this.createdAt,
     updatedAt: this.updatedAt,
     tagList: this.tagList,
