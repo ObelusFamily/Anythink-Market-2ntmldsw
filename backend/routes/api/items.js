@@ -15,7 +15,7 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 // Preload item objects on routes with ':item'
-router.param("item", function(req, res, next, slug) {
+router.param("item",async function(req, res, next, slug) {
   Item.findOne({ slug: slug })
     .populate("seller")
     .then(function(item) {
