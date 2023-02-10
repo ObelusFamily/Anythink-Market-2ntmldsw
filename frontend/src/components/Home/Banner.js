@@ -2,7 +2,7 @@ import React from "react";
 import logo from "../../imgs/logo.png";
 import agent from "../../agent";
 
-const Banner = () => {
+const Banner = (props) => {
 
   const onSearchChange = (event) => {
     props.onSearchFilter(
